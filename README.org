@@ -1,0 +1,9 @@
+* minimum-spanning-tree-routers-clients
+Implementation of minimum spanning tree algorithm for optimizing the connections among routers and clients
+
+** Algorithms for Minimum Spanning Tree (MST) 
+   - Kruskal’s Algorithm (Greedy Algorithm)
+     https://www.geeksforgeeks.org/greedy-algorithms-set-2-kruskals-minimum-spanning-tree-mst/
+   - Prim’s Algorithm (Greedy Algorithm)
+   - Boruvka's algorithm
+     https://www.geeksforgeeks.org/greedy-algorithms-set-5-prims-minimum-spanning-tree-mst-2/
