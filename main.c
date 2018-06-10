@@ -16,8 +16,9 @@
 
 int compara_arestas(const void* a1, const void* a2) {
   int p1, p2;
-  p1 = aresta_get_peso(((arestas_t*)a1));
-  p2 = aresta_get_peso(((arestas_t*)a2));
+  p1 = aresta_get_peso(*(arestas_t**)a1);
+  p2 = aresta_get_peso(*(arestas_t**)a2);
+  printf("\np1: %i, p2: %i", p1, p2);
   if (p1 < p2)
     return -1;
   else {
@@ -57,7 +58,12 @@ int main(void) {
   for (int i = 0; i < *arestas_tamanho; i++)
     printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
 
-  //  qsort(arestas, **arestas_tamanho, aresta_tamanho_struct(), compara_arestas);
+  //  qsort(arestas_arr, *arestas_tamanho, sizeof(void*), compara_arestas);
+  qsort(arestas_arr, *arestas_tamanho, sizeof(arestas_t*), compara_arestas);
+
+  printf("\nsorted:");
+  for (int i = 0; i < *arestas_tamanho; i++)
+    printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
 
 	exportar_grafo_dot("grafo.dot", grafo);
 	//libera_grafo(grafo);
