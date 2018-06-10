@@ -17,36 +17,18 @@ typedef struct arestas arestas_t;
 /* Tipo enum o status das arestas: utilizado para exportação do DOT */
 typedef enum status_aresta { VAZIO, EXPORTADA } status_aresta_t;
 
-/* Cria um novo vertice com id */
 vertice_t *cria_vertice(int id);
-
-/* Cria uma nova aresta */
 arestas_t *cria_aresta(vertice_t *fonte, vertice_t *destino, int peso);
-
-/* Obtem id de um vertice */
 int vertice_get_id(vertice_t *vertice);
-
-/* Adiciona uma aresta a um grafo */
-void adiciona_aresta(grafo_t *grafo, vertice_t *vertice, arestas_t *aresta);
-
-/* Obtem a lista encadeada das arestas */
 lista_enc_t *vertice_get_arestas(vertice_t *vertice);
-
-arestas_t *grafo_get_arestas_arr(grafo_t *grafo);
-
-/* Retorna o peso de um aresta */
 int aresta_get_peso (arestas_t *aresta);
-
 /* Obtem o destinho de uma aresta */
 vertice_t *aresta_get_adjacente(arestas_t *aresta);
+#define aresta_get_dest(x) aresta_get_adjacente(x)
+vertice_t *aresta_get_fonte(arestas_t *aresta);
 
-/* Retorna uma aresta caso seja fonte ou destino */
 arestas_t *procurar_adjacente(vertice_t *vertice, vertice_t *adjacente);
-
-/* Configura status de uma aresta */
 void aresta_set_status(arestas_t *aresta, status_aresta_t status);
-
-/* Obtem o status de uma aresta */
 status_aresta_t aresta_get_status (arestas_t *aresta);
 
 

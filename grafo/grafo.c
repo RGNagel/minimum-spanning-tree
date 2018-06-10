@@ -7,15 +7,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h> /* for memset */
 #include <stdarg.h>
 #include <limits.h>
 #include "grafo.h"
 #include "vertice.h"
 #include "../lista_enc/lista_enc.h"
-#include "../lista_enc/lista_enc.h"
 #include "../lista_enc/no.h"
-#include "../fila/fila.h"
-#include "../pilha/pilha.h"
 
 #define FALSE 0
 #define TRUE 1
@@ -29,106 +27,6 @@ struct grafos {
 	lista_enc_t *vertices;
   lista_enc_t *arestas; /* for ordering */
 };
-
-
-grafo_t * bfs(grafo_t *grafo, vertice_t* inicial)
-{
-	#ifdef DEBUG
-	printf("\nalgoritmo de busca em largura (bfs):");
-	#endif
-
-	// cria outro grafo arvore
-	grafo_t *grafoRes = cria_grafo(vertice_get_id(inicial));
-
-	fila_t *q = cria_fila();
-	// percorre vertices do grafos
-	no_t *no = obter_cabeca(grafo->vertices);
-	while (no != NULL) {
-		vertice_t *v = obter_dado(no);
-		vertice_set_pai(v, NULL);
-		vertice_set_dist(v, INFINITO);
-		no = obtem_proximo(no);
-	}
-
-	vertice_set_dist(inicial, 0);
-	enqueue(inicial, q);
-
-	while (!fila_vazia(q)) {
-		vertice_t *u = dequeue(q);
-		// add ao grafo arvore
-		vertice_t *uRes = procura_vertice(grafoRes, vertice_get_id(u));
-		if (!uRes)
-			uRes = grafo_adicionar_vertice(grafoRes, vertice_get_id(u));
-		#ifdef DEBUG
-			printf("\nvertice %i\n", vertice_get_id(u));
-		#endif
-
-		// percorre adjacentes a (arestas de) u
-		lista_enc_t *arestas = vertice_get_arestas(u);
-		no_t *arestaNo = obter_cabeca(arestas);
-		while (arestaNo != NULL) {
-			vertice_t *v = aresta_get_adjacente(obter_dado(arestaNo));
-			if (vertice_get_dist(v) == INFINITO) {
-				vertice_set_dist(v, vertice_get_dist(u) + 1);
-				vertice_set_pai(v, u);
-				enqueue(v, q);
-				// add ao grafo arvore
-				grafo_adicionar_vertice(grafoRes, vertice_get_id(v));
-				adiciona_adjacentes(grafoRes, uRes, 2, vertice_get_id(v), 1);
-			}
-			arestaNo = obtem_proximo(arestaNo);
-		}
-		free(u);
-	}
-	libera_fila(q);
-	return grafoRes;
-}
-
-
-grafo_t * dfs(grafo_t *grafo, vertice_t* inicial)
-{
-	#ifdef DEBUG
-	printf("\nalgoritmo de busca em profundidade (dfs):");
-	#endif
-	pilha_t *s = cria_pilha();
-	grafo_t *grafoRes = cria_grafo(vertice_get_id(inicial));
-
-	no_t *no = obter_cabeca(grafo->vertices);
-	while (no != NULL) {
-		vertice_t *v = obter_dado(no);
-		vertice_set_visitado(v, FALSE);
-		no = obtem_proximo(no);
-	}
-	vertice_set_visitado(inicial, TRUE);
-	push(inicial, s);
-	while(!pilha_vazia(s)) {
-		vertice_t *u = pop(s);
-		vertice_t *uRes = procura_vertice(grafoRes, vertice_get_id(u));
-		if (!uRes)
-			uRes = grafo_adicionar_vertice(grafoRes, vertice_get_id(u));
-		#ifdef DEBUG
-			printf("\nvertice %i\n", vertice_get_id(u));
-		#endif
-		lista_enc_t *arestas = vertice_get_arestas(u);
-		no_t *arestaNo = obter_cabeca(arestas);
-		while (arestaNo != NULL) {
-			vertice_t *v = aresta_get_adjacente(obter_dado(arestaNo));
-			if (!vertice_get_visitado(v)) {
-				vertice_set_visitado(v, TRUE);
-				push(v, s);
-				// add ao grafo arvore
-				grafo_adicionar_vertice(grafoRes, vertice_get_id(v));
-				adiciona_adjacentes(grafoRes, uRes, 2, vertice_get_id(v), 1);
-			}
-			arestaNo = obtem_proximo(arestaNo);
-		}
-		free(u);
-	}
-	libera_pilha(s);
-	return grafoRes;
-}
-
-//--------------------------------------------------------------------------------------
 
 grafo_t *cria_grafo(int id)
 {
@@ -302,7 +200,7 @@ void exportar_grafo_dot(const char *filename, grafo_t *grafo)
 				aresta_set_status(contra_aresta, EXPORTADA);
 			//obtem peso
 			peso = aresta_get_peso(aresta);
-
+      
 			fprintf(file, "\t%d -- %d [label = %d];\n",
 					vertice_get_id(vertice),
 					vertice_get_id(adjacente),
@@ -382,19 +280,19 @@ static void _union(int *parent, int set1, int set2)
 
 int has_cycle(grafo_t *grafo)
 {
-  int arestas = lista_tamanho(grafo->arestas);
-  int *parent = (int*) malloc(sizeof(int)*arestas);
-  memset(parent, -1, sizeof(int)*arestas); /* init all elements with -1 (no parent) */
+  int arestas_tamanho = lista_tamanho(grafo->arestas);
+  int *parent = (int*) malloc(sizeof(int)*arestas_tamanho);
+  memset(parent, -1, sizeof(int)*arestas_tamanho); /* init all elements with -1 (no parent) */
 
   no_t *no_temp = obter_cabeca(grafo->arestas);
   while (no_temp != NULL) {
 
     arestas_t *aresta_temp = obter_dado(no_temp);
-    vertice_t *v1 = aresta_temp->fonte;
-    vertice_t *v2 = aresta_temp->destino;
+    vertice_t *v1 = aresta_get_fonte(aresta_temp);
+    vertice_t *v2 = aresta_get_fonte(aresta_temp);
 
-    int v1_p = _find_parent(parent, v1->id);
-    int v2_p = _find_parent(parent, v2->id);
+    int v1_p = _find_parent(parent, vertice_get_id(v1));
+    int v2_p = _find_parent(parent, vertice_get_id(v2));
 
     if (v1_p == v2_p) {
       free(parent);
@@ -406,4 +304,52 @@ int has_cycle(grafo_t *grafo)
   }
   free(parent);
   return 0; /* no cycle */
+}
+
+arestas_t **grafo_get_arestas_arr(grafo_t *grafo, int *tamanho_arr /* tamanho p/ preencher */)
+{
+
+  if (grafo == NULL) {
+    fprintf(stderr, "grafo_get_arestas_arr: invalid data");
+		exit(EXIT_FAILURE);
+  }
+
+  lista_enc_t *arestas = grafo_get_arestas(grafo);
+  *tamanho_arr = lista_tamanho(arestas);
+
+  arestas_t **arestas_arr = (arestas_t**) malloc(sizeof(void*)*(*tamanho_arr));
+
+  no_t *no_temp = obter_cabeca(arestas);
+  arestas_t **arestas_arr_temp = arestas_arr; /* ptr temp p/ incrementar sem perder referencia de posicao do array original */
+  while (no_temp != NULL) {
+    *arestas_arr_temp = (arestas_t*)obter_dado(no_temp);
+    no_temp = obtem_proximo(no_temp);
+    *arestas_arr_temp++;
+  }
+  fflush(stdout);
+  return arestas_arr;
+}
+
+void adiciona_aresta(grafo_t *grafo, vertice_t *vertice, arestas_t *aresta)
+{
+	no_t *no;
+
+	if (vertice == NULL || aresta == NULL || grafo == NULL)	{
+		fprintf(stderr, "adiciona_aresta: dados invalidos\n");
+		exit(EXIT_FAILURE);
+	}
+
+	no = cria_no(aresta);
+	add_cauda(vertice_get_arestas(vertice), no);
+  add_cauda(grafo->arestas, no);
+
+}
+
+lista_enc_t *grafo_get_arestas(grafo_t *grafo)
+{
+  if (grafo == NULL) {
+    fprintf(stderr, "grafo_get_arestas: vertice invalido\n");
+    exit(EXIT_FAILURE);
+  }
+  return grafo->arestas;
 }

@@ -30,7 +30,6 @@ struct arestas {
 	int peso;
 	vertice_t *fonte;
 	vertice_t *dest;
-
 	/* status para expotacao em arquivo */
 	status_aresta_t status;
 };
@@ -84,21 +83,6 @@ arestas_t *cria_aresta(vertice_t *fonte, vertice_t *destino, int peso)
 	return p;
 }
 
-void adiciona_aresta(grafo_t *grafo, vertice_t *vertice, arestas_t *aresta)
-{
-	no_t *no;
-
-	if (vertice == NULL || aresta == NULL || grafo == NULL)	{
-		fprintf(stderr, "adiciona_aresta: dados invalidos\n");
-		exit(EXIT_FAILURE);
-	}
-
-	no = cria_no(aresta);
-	add_cauda(vertice->arestas, no);
-  add_cauda(grafo->arestas, no);
-
-}
-
 lista_enc_t *vertice_get_arestas(vertice_t *vertice)
 {
 	if (vertice == NULL){
@@ -108,14 +92,6 @@ lista_enc_t *vertice_get_arestas(vertice_t *vertice)
 
 	return vertice->arestas;
 }
-arestas_t *grafo_get_arestas(vertice_t *grafo)
-{
-  if (grafo == NULL) {
-    fprintf(stderr, "grafo_get_arestas: vertice invalido\n");
-    exit(EXIT_FAILURE);
-  }
-  return grafo->arestas;
-}
 int aresta_get_peso (arestas_t *aresta) {
 	if (aresta == NULL){
 		fprintf(stderr, "aresta_get_peso: aresta invalido\n");
@@ -123,6 +99,13 @@ int aresta_get_peso (arestas_t *aresta) {
 	}
 
 	return aresta->peso;
+}
+vertice_t *aresta_get_fonte(arestas_t *aresta) {
+  if (aresta == NULL){
+		fprintf(stderr, "aresta_get_fonte: aresta invalido\n");
+		exit(EXIT_FAILURE);
+	}
+  return aresta->fonte;
 }
 
 vertice_t *aresta_get_adjacente(arestas_t *aresta)
@@ -287,23 +270,6 @@ int vertice_get_visitado(vertice_t *vertice) {
 		exit(EXIT_FAILURE);
 	}
 	return vertice->visitado;
-}
-arestas_t *grafo_get_arestas_arr(grafo_t *grafo, int **tamanho_arr /* tamanho p/ preencher */)
-{
-  int tamanho,i,j;
-  arestas_t *arestas_arr;
-
-  lista_enc_t *arestas = grafo_get_arestas(grafo);
-  tamanho = lista_tamanho(arestas);
-  **tamanho_arr = tamanho;
-  arestas_arr = malloc(sizeof(arestas_t)*tamanho);
-
-  no_t *no_temp = obter_cabeca(arestas);
-  while (no_temp != NULL) {
-    arestas_arr[i] = obter_dado();
-    no_temp = obtem_proximo(no_temp);
-  }
-  return arestas_arr;
 }
 
 int aresta_tamanho_struct()

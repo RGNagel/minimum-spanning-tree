@@ -12,13 +12,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "grafo/grafo.h"
 
 int compara_arestas(const void* a1, const void* a2) {
   int p1, p2;
-  p1 = (arestas_t*)a1->peso;
-  p2 = (arestas_t*)a2->peso;
+  p1 = aresta_get_peso(((arestas_t*)a1));
+  p2 = aresta_get_peso(((arestas_t*)a2));
   if (p1 < p2)
     return -1;
   else {
@@ -31,17 +30,16 @@ int compara_arestas(const void* a1, const void* a2) {
 
 int main(void) {
 
-  int i;
 	grafo_t *grafo;
-	vertice_t *vertices[9];
+	vertice_t **vertice = malloc(sizeof(void*)*9);
 
 	grafo = cria_grafo(0);
 
 	//Adiciona todos os vertices no grafo
   // TODO: verificar se add vertice nao esta repetido
-  int i;
-  for (i = 0; i < 9; i++) {
-    vertices[i] = grafo_adicionar_vertice(grafo, i);
+
+  for (int i = 0; i < 9; i++) {
+    vertice[i] = grafo_adicionar_vertice(grafo, i);
   }
   adiciona_adjacentes(grafo, vertice[0], 4, 1, 4, 7, 8);
   adiciona_adjacentes(grafo, vertice[1], 4, 2, 8, 7, 11);
@@ -50,20 +48,19 @@ int main(void) {
   adiciona_adjacentes(grafo, vertice[4], 2, 5, 10);
   adiciona_adjacentes(grafo, vertice[5], 2, 6, 2);
   adiciona_adjacentes(grafo, vertice[6], 4, 7, 1, 8, 6);
-  adiciona_adjacentes(grafo, vertice[7], 2, 8, 7)
+  adiciona_adjacentes(grafo, vertice[7], 2, 8, 7);
   adiciona_adjacentes(grafo, vertice[8], 6, 6, 14, 2, 7, 3, 9);
 
-  int **arestas_tamanho;
-  arestas_t *arestas = grafo_get_arestas_arr(grafo, arestas_tamanho);
-  qsort(arestas, arestas_tamanho, aresta_tamanho_struct(), compara_arestas);
+  int *arestas_tamanho = (int*)malloc(sizeof(int));
+  arestas_t **arestas_arr = grafo_get_arestas_arr(grafo, arestas_tamanho);
 
-  printf("arestas ordenadas:\naresta -> peso");
-  for (i = 0; i < 9; i++) {
-    printf("\n%i -> %i", arestas[i].id, arestas[i].peso);
-  }
+  for (int i = 0; i < *arestas_tamanho; i++)
+    printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
+
+  //  qsort(arestas, **arestas_tamanho, aresta_tamanho_struct(), compara_arestas);
 
 	exportar_grafo_dot("grafo.dot", grafo);
-	libera_grafo(grafo);
+	//libera_grafo(grafo);
 
 	return EXIT_SUCCESS;
 }

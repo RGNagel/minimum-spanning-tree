@@ -9,7 +9,7 @@
 #define GRAFO_GRAFO_H_
 
 #include "vertice.h"
-#include "../pilha/pilha.h"
+#include "../lista_enc/lista_enc.h"
 
 typedef struct grafos grafo_t;
 
@@ -37,10 +37,6 @@ void exportar_grafo_dot(const char *filename, grafo_t *grafo);
 /* Libera memoria utilizada pelo grafo */
 void libera_grafo (grafo_t *grafo);
 
-/* Menor camingo entre todos os nos:
- * retorna um pilha do caminho entre fonte e destino  */
-pilha_t* Dijkstra(grafo_t *grafo, vertice_t *fonte, vertice_t *destino);
-
 /* Procura um vertice com menor a menor distancia
  * Ver: struct vertices */
 no_t *busca_menos_distante(lista_enc_t *Q);
@@ -48,14 +44,15 @@ no_t *busca_menos_distante(lista_enc_t *Q);
 /* Retorna TRUE se vertice_procurado estiver no conjunto Q*/
 int busca_vertice(lista_enc_t *lista, vertice_t *vertice_procurado);
 
-
 lista_enc_t* componentes_conexos(grafo_t *grafo);
-
-grafo_t * bfs(grafo_t *grafo, vertice_t* inicial);
-
-grafo_t * dfs(grafo_t *grafo, vertice_t* inicial);
 
 int has_cycle(grafo_t *grafo);
 
+arestas_t **grafo_get_arestas_arr(grafo_t *grafo, int *tamanho_arr);
+
+/* Adiciona uma aresta a um grafo */
+void adiciona_aresta(grafo_t *grafo, vertice_t *vertice, arestas_t *aresta);
+
+lista_enc_t *grafo_get_arestas(grafo_t *grafo);
 
 #endif /* GRAFO_GRAFO_H_ */

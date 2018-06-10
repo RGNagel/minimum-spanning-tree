@@ -1,20 +1,18 @@
-objects = main.o pilha/pilha.o fila/fila.o lista_enc/no.o lista_enc/lista_enc.o binaria/tree.o heap/heap.o
-output_file = ex.out
+objects = main.o grafo/grafo.o grafo/vertice.o lista_enc/no.o lista_enc/lista_enc.o
+output_file = program.out
 
 
 $(output_file) : $(objects)
 	cc -o $(output_file) $(objects)
 
-main.o: lista_enc/lista_enc.h binaria/tree.h heap/heap.h
-pilha/pilha.o: lista_enc/lista_enc.h lista_enc/no.h pilha/pilha.h
-fila/fila.o: lista_enc/lista_enc.h lista_enc/no.h fila/fila.h
+main.o: lista_enc/lista_enc.h grafo/grafo.h grafo/vertice.h
+grafo/grafo.o: grafo/grafo.h lista_enc/lista_enc.h grafo/vertice.h
+grafo/vertice.o: grafo/vertice.h lista_enc/lista_enc.h
 lista_enc/lista_enc.o: lista_enc/lista_enc.h lista_enc/no.h
 lista_enc/no.o: lista_enc/no.h
-binaria/tree.o: binaria/tree.h lista_enc/lista_enc.h
-heap/heap.o: heap/heap.h
 
 clean:
-	rm -f *.o lista_enc/*.o pilha/*.o fila/*.o binaria/*.o *.dot *.svg *.out
+	rm -f *.o grafo/*.o lista_enc/*.o pilha/*.o fila/*.o binaria/*.o *.dot *.svg *.out
 
 hello_world:
 	echo "Hello World"

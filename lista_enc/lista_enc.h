@@ -20,6 +20,6 @@ void imprimi_lista_tras (lista_enc_t *lista);
  * no_removido é liberado da memoória  */
 void *remover_no(lista_enc_t *lista, no_t *no_removido);
 
-int *lista_tamanho(lista_enc_t *lista);
+int lista_tamanho(lista_enc_t *lista);
 
 #endif // LISTA_ENC_H_INCLUDED
