@@ -55,4 +55,7 @@ grafo_t * bfs(grafo_t *grafo, vertice_t* inicial);
 
 grafo_t * dfs(grafo_t *grafo, vertice_t* inicial);
 
+int has_cycle(grafo_t *grafo);
+
+
 #endif /* GRAFO_GRAFO_H_ */

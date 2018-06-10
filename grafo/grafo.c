@@ -364,3 +364,46 @@ void libera_grafo (grafo_t *grafo){
 	free(grafo->vertices);
 	free(grafo);
 }
+
+static int _find_parent(int *parent, int v)
+{
+  if (-1 == parent[v])
+    return v;
+
+  return _find_parent(parent, parent[v]);
+}
+
+static void _union(int *parent, int set1, int set2)
+{
+  set1 = _find_parent(parent, set1);
+  set2 = _find_parent(parent, set2);
+  parent[set1] = set2;
+}
+
+int has_cycle(grafo_t *grafo)
+{
+  int arestas = lista_tamanho(grafo->arestas);
+  int *parent = (int*) malloc(sizeof(int)*arestas);
+  memset(parent, -1, sizeof(int)*arestas); /* init all elements with -1 (no parent) */
+
+  no_t *no_temp = obter_cabeca(grafo->arestas);
+  while (no_temp != NULL) {
+
+    arestas_t *aresta_temp = obter_dado(no_temp);
+    vertice_t *v1 = aresta_temp->fonte;
+    vertice_t *v2 = aresta_temp->destino;
+
+    int v1_p = _find_parent(parent, v1->id);
+    int v2_p = _find_parent(parent, v2->id);
+
+    if (v1_p == v2_p) {
+      free(parent);
+      return 1; /* has cycle */
+    }
+
+    _union(parent, v1_p, v2_p);
+    no_temp = obtem_proximo(no_temp);
+  }
+  free(parent);
+  return 0; /* no cycle */
+}
