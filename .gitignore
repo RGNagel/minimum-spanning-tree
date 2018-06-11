@@ -1,6 +1,7 @@
 GRTAGS
 GSYMS
 GTAGS
+GPATH
 *.out
 *.o
 *.dot
