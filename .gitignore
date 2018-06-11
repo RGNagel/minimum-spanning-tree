@@ -2,3 +2,5 @@ GRTAGS
 GSYMS
 GTAGS
 *.out
+*.o
+*.dot

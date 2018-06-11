@@ -51,36 +51,28 @@ int main(void) {
   adiciona_adjacentes(grafo, vertice[7], 2, 8, 7);
   adiciona_adjacentes(grafo, vertice[8], 6, 6, 14, 2, 7, 3, 9);
 
-  
-
-  no_t *no_temp = obter_cabeca(grafo_get_vertices(grafo));
-  /*
-  while (no_temp != NULL) {
-    printf("\nvertice id: %d", vertice_get_id(obter_dado(no_temp)));
-    no_temp = obtem_proximo(no_temp);
-  }
-  */
   exportar_grafo_dot("grafo.dot", grafo);
-
-  return 1;
 
   int *arestas_tamanho = (int*)malloc(sizeof(int));
   arestas_t **arestas_arr = grafo_get_arestas_arr(grafo, arestas_tamanho);
 
+  #ifdef DEBUG
   for (int i = 0; i < *arestas_tamanho; i++)
     printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
+  #endif
 
   qsort(arestas_arr, *arestas_tamanho, sizeof(arestas_t*), compara_arestas);
 
+  #ifdef DEBU
   printf("\nsorted:");
   for (int i = 0; i < *arestas_tamanho; i++)
     printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
-
-  exportar_grafo_dot("grafo.dot", grafo);
-
+  #endif
 
   libera_grafo(grafo); /* colocar no final mais tarde */
-
+  free(vertice);
+  free(arestas_tamanho);
+  free(arestas_arr);
   return 1;
 
   grafo_t *grafo_mst = cria_grafo(1);
