@@ -54,5 +54,8 @@ arestas_t **grafo_get_arestas_arr(grafo_t *grafo, int *tamanho_arr);
 void adiciona_aresta(grafo_t *grafo, vertice_t *vertice, arestas_t *aresta);
 
 lista_enc_t *grafo_get_arestas(grafo_t *grafo);
+lista_enc_t *grafo_get_vertices(grafo_t *grafo);
+
+void grafo_remove_aresta(grafo_t *grafo, arestas_t *aresta);
 
 #endif /* GRAFO_GRAFO_H_ */
