@@ -18,7 +18,6 @@ int compara_arestas(const void* a1, const void* a2) {
   int p1, p2;
   p1 = aresta_get_peso(*(arestas_t**)a1);
   p2 = aresta_get_peso(*(arestas_t**)a2);
-  printf("\np1: %i, p2: %i", p1, p2);
   if (p1 < p2)
     return -1;
   else {
@@ -32,7 +31,7 @@ int compara_arestas(const void* a1, const void* a2) {
 int main(void) {
 
 	grafo_t *grafo;
-	vertice_t **vertice = malloc(sizeof(void*)*9);
+	vertice_t **vertice = malloc(sizeof(vertice_t*)*9);
 
 	grafo = cria_grafo(0);
 
@@ -40,7 +39,7 @@ int main(void) {
   // TODO: verificar se add vertice nao esta repetido
 
   for (int i = 0; i < 9; i++) {
-    vertice[i] = grafo_adicionar_vertice(grafo, i);
+    vertice[i] =  grafo_adicionar_vertice(grafo, i);
   }
   adiciona_adjacentes(grafo, vertice[0], 4, 1, 4, 7, 8);
   adiciona_adjacentes(grafo, vertice[1], 4, 2, 8, 7, 11);
@@ -52,21 +51,55 @@ int main(void) {
   adiciona_adjacentes(grafo, vertice[7], 2, 8, 7);
   adiciona_adjacentes(grafo, vertice[8], 6, 6, 14, 2, 7, 3, 9);
 
+  printf("peso: fonte -> destino");
+  for (int i = 0; i < *arestas_tamanho; i++)
+    printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
+
+  exportar_grafo_dot("grafo.dot", grafo);
+
+  return 1;
+
   int *arestas_tamanho = (int*)malloc(sizeof(int));
   arestas_t **arestas_arr = grafo_get_arestas_arr(grafo, arestas_tamanho);
 
   for (int i = 0; i < *arestas_tamanho; i++)
     printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
 
-  //  qsort(arestas_arr, *arestas_tamanho, sizeof(void*), compara_arestas);
   qsort(arestas_arr, *arestas_tamanho, sizeof(arestas_t*), compara_arestas);
 
   printf("\nsorted:");
   for (int i = 0; i < *arestas_tamanho; i++)
     printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
 
-	exportar_grafo_dot("grafo.dot", grafo);
-	//libera_grafo(grafo);
+  printf("GRAFO ID EXPORT BEFORE: %d", vertice_get_id(vertice[1]));
+  exportar_grafo_dot("grafo.dot", grafo);
+
+  fflush(stdout);
+
+  libera_grafo(grafo); /* colocar no final mais tarde */
+
+  return 1;
+
+  grafo_t *grafo_mst = cria_grafo(1);
+
+  for (int i = 0; i < *arestas_tamanho; i++) {
+    // we must create new vertices for not cluttering original graph
+    vertice_t *src = cria_vertice(vertice_get_id(aresta_get_fonte(arestas_arr[i])));
+    vertice_t *dest = cria_vertice(vertice_get_id(aresta_get_dest(arestas_arr[i])));
+    adiciona_aresta(grafo_mst, src, arestas_arr[i]);
+    adiciona_aresta(grafo_mst, dest, arestas_arr[i]);
+    // when cycle happens, we don't remove vertices since they were already added in the graph before
+    if (has_cycle(grafo_mst))
+      grafo_remove_aresta(grafo_mst, arestas_arr[i]);
+    // check if edges = v - 1, if so then finish
+    if (lista_tamanho(grafo_get_vertices(grafo_mst)) - 1 == lista_tamanho(grafo_get_arestas(grafo_mst)))
+      break;
+  }
+
+
+  exportar_grafo_dot("grafo_mst.dot", grafo_mst);
+
+  //libera_grafo(grafo_mst);
 
 	return EXIT_SUCCESS;
 }

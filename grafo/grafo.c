@@ -131,7 +131,7 @@ void adiciona_adjacentes(grafo_t *grafo, vertice_t *vertice, int n, ...)
 			fprintf(stderr, "adiciona_adjacentes: sucessor nao encontrado no grafo\n");
 			exit(EXIT_FAILURE);
 		}
-
+    
 		aresta = cria_aresta(vertice, sucessor,peso);
 		adiciona_aresta(grafo, vertice, aresta); /* inclui grafo como arg. p/ preencher a lista de arestas na struct do grafo*/
 
@@ -232,13 +232,13 @@ void libera_grafo (grafo_t *grafo){
 	no_vert = obter_cabeca(grafo->vertices);
 	while (no_vert){
 		vertice = obter_dado(no_vert);
-
+    
 		//libera todas as arestas
 		lista_arestas = vertice_get_arestas(vertice);
 		no_arest = obter_cabeca(lista_arestas);
 		while (no_arest){
 			aresta = obter_dado(no_arest);
-
+      
 			//libera aresta
 			free(aresta);
 
@@ -260,6 +260,7 @@ void libera_grafo (grafo_t *grafo){
 
 	//libera grafo e vertice
 	free(grafo->vertices);
+  free(grafo->arestas);
 	free(grafo);
 }
 
@@ -326,7 +327,6 @@ arestas_t **grafo_get_arestas_arr(grafo_t *grafo, int *tamanho_arr /* tamanho p/
     no_temp = obtem_proximo(no_temp);
     *arestas_arr_temp++;
   }
-  fflush(stdout);
   return arestas_arr;
 }
 
@@ -353,3 +353,26 @@ lista_enc_t *grafo_get_arestas(grafo_t *grafo)
   }
   return grafo->arestas;
 }
+
+lista_enc_t *grafo_get_vertices(grafo_t *grafo)
+{
+  if (grafo == NULL) {
+    fprintf(stderr, "grafo_get_vertices: vertice invalido\n");
+    exit(EXIT_FAILURE);
+  }
+  return grafo->vertices;
+}
+
+void grafo_remove_aresta(grafo_t *grafo, arestas_t *aresta)
+{
+  no_t *no = remover_cauda(grafo->arestas);
+  free(no);
+  vertice_t *v = aresta_get_fonte(aresta);
+  no = remover_cauda(vertice_get_arestas(v));
+  free(no);
+  v = aresta_get_dest(aresta);
+  no = remover_cauda(vertice_get_arestas(v));
+  free(no);
+}
+
+
