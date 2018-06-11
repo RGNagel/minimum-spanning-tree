@@ -181,10 +181,12 @@ void exportar_grafo_dot(const char *filename, grafo_t *grafo)
     //obtem todos as arestas
 		lista_arestas = vertice_get_arestas(vertice);
 
+    /*
     #ifdef DEBUG
     printf("\nvertice id in exported: %d", vertice_get_id(vertice));
     printf("\ntamanho arestas do vertice: %d", lista_tamanho(lista_arestas));
     #endif
+    */
 
 		no_arest = obter_cabeca(lista_arestas);
 		while (no_arest) {
@@ -262,7 +264,14 @@ void libera_grafo (grafo_t *grafo){
 		no_vert = obtem_proximo(no_vert);
 		free(no_liberado);
 	}
-
+  // free nodes in grafo->arestas
+  no_arest = obter_cabeca(grafo->arestas);
+  while (no_arest) {
+    // we do not need to free the data as it was already free in loop before
+    no_liberado = no_arest;
+    no_arest = obtem_proximo(no_arest);
+    free(no_liberado);
+  }
 	//libera grafo e vertice
 	free(grafo->vertices);
   free(grafo->arestas);
