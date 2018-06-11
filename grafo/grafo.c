@@ -132,7 +132,7 @@ void adiciona_adjacentes(grafo_t *grafo, vertice_t *vertice, int n, ...)
 			exit(EXIT_FAILURE);
 		}
     
-		aresta = cria_aresta(vertice, sucessor,peso);
+		aresta = cria_aresta(vertice, sucessor, peso);
 		adiciona_aresta(grafo, vertice, aresta); /* inclui grafo como arg. p/ preencher a lista de arestas na struct do grafo*/
 
 #ifdef DEBUG
@@ -178,8 +178,13 @@ void exportar_grafo_dot(const char *filename, grafo_t *grafo)
 	while (no_vert) {
 		vertice = obter_dado(no_vert);
 
-		//obtem todos as arestas
+    //obtem todos as arestas
 		lista_arestas = vertice_get_arestas(vertice);
+
+    #ifdef DEBUG
+    printf("\nvertice id in exported: %d", vertice_get_id(vertice));
+    printf("\ntamanho arestas do vertice: %d", lista_tamanho(lista_arestas));
+    #endif
 
 		no_arest = obter_cabeca(lista_arestas);
 		while (no_arest) {
@@ -341,6 +346,7 @@ void adiciona_aresta(grafo_t *grafo, vertice_t *vertice, arestas_t *aresta)
 
 	no = cria_no(aresta);
 	add_cauda(vertice_get_arestas(vertice), no);
+  no = cria_no(aresta); /* we need to create NEW node for OTHER list. Else, node from first list will point to next no in second list */
   add_cauda(grafo->arestas, no);
 
 }

@@ -51,10 +51,15 @@ int main(void) {
   adiciona_adjacentes(grafo, vertice[7], 2, 8, 7);
   adiciona_adjacentes(grafo, vertice[8], 6, 6, 14, 2, 7, 3, 9);
 
-  printf("peso: fonte -> destino");
-  for (int i = 0; i < *arestas_tamanho; i++)
-    printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
+  
 
+  no_t *no_temp = obter_cabeca(grafo_get_vertices(grafo));
+  /*
+  while (no_temp != NULL) {
+    printf("\nvertice id: %d", vertice_get_id(obter_dado(no_temp)));
+    no_temp = obtem_proximo(no_temp);
+  }
+  */
   exportar_grafo_dot("grafo.dot", grafo);
 
   return 1;
@@ -71,10 +76,8 @@ int main(void) {
   for (int i = 0; i < *arestas_tamanho; i++)
     printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
 
-  printf("GRAFO ID EXPORT BEFORE: %d", vertice_get_id(vertice[1]));
   exportar_grafo_dot("grafo.dot", grafo);
 
-  fflush(stdout);
 
   libera_grafo(grafo); /* colocar no final mais tarde */
 
