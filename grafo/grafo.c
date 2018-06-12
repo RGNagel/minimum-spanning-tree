@@ -131,7 +131,7 @@ void adiciona_adjacentes(grafo_t *grafo, vertice_t *vertice, int n, ...)
 			fprintf(stderr, "adiciona_adjacentes: sucessor nao encontrado no grafo\n");
 			exit(EXIT_FAILURE);
 		}
-    
+    ///////////////////////// 
 		aresta = cria_aresta(vertice, sucessor, peso);
 		adiciona_aresta(grafo, vertice, aresta); /* inclui grafo como arg. p/ preencher a lista de arestas na struct do grafo*/
 
@@ -280,31 +280,34 @@ void libera_grafo (grafo_t *grafo){
 
 static int _find_parent(int *parent, int v)
 {
-  if (-1 == parent[v])
-    return v;
-
-  return _find_parent(parent, parent[v]);
+  return (-1 == parent[v]) ? v : _find_parent(parent, parent[v]);
 }
 
 static void _union(int *parent, int set1, int set2)
 {
   set1 = _find_parent(parent, set1);
   set2 = _find_parent(parent, set2);
-  parent[set1] = set2;
+  parent[set1] = set2; /* or vice-versa */
 }
 
-int has_cycle(grafo_t *grafo)
+int has_cycle(grafo_t *grafo, int n_vertices)
 {
-  int arestas_tamanho = lista_tamanho(grafo->arestas);
-  int *parent = (int*) malloc(sizeof(int)*arestas_tamanho);
-  memset(parent, -1, sizeof(int)*arestas_tamanho); /* init all elements with -1 (no parent) */
+  //int arestas_tamanho = lista_tamanho(grafo->arestas);
+  int *parent = (int*) malloc(sizeof(int)*n_vertices);
+  memset(parent, -1, sizeof(int)*n_vertices); /* init all elements with -1 (no parent) */
+
+  /*#ifdef DEBUG
+  for (int i = 0; i < arestas_tamanho; i++)
+    printf("\nparent[%d]: %d", i, parent[i]);
+  fflush(stdout);
+  #endif*/
 
   no_t *no_temp = obter_cabeca(grafo->arestas);
-  while (no_temp != NULL) {
+  while (no_temp) {
 
     arestas_t *aresta_temp = obter_dado(no_temp);
     vertice_t *v1 = aresta_get_fonte(aresta_temp);
-    vertice_t *v2 = aresta_get_fonte(aresta_temp);
+    vertice_t *v2 = aresta_get_dest(aresta_temp);
 
     int v1_p = _find_parent(parent, vertice_get_id(v1));
     int v2_p = _find_parent(parent, vertice_get_id(v2));
@@ -355,7 +358,7 @@ void adiciona_aresta(grafo_t *grafo, vertice_t *vertice, arestas_t *aresta)
 
 	no = cria_no(aresta);
 	add_cauda(vertice_get_arestas(vertice), no);
-  no = cria_no(aresta); /* we need to create NEW node for OTHER list. Else, node from first list will point to next no in second list */
+  no = cria_no(aresta); /* we need to create NEW node for any OTHER list. Else, node from first list will point to next node in second list */
   add_cauda(grafo->arestas, no);
 
 }
@@ -378,16 +381,21 @@ lista_enc_t *grafo_get_vertices(grafo_t *grafo)
   return grafo->vertices;
 }
 
-void grafo_remove_aresta(grafo_t *grafo, arestas_t *aresta)
+void grafo_remove_ultima_aresta(grafo_t *grafo)
 {
   no_t *no = remover_cauda(grafo->arestas);
-  free(no);
-  vertice_t *v = aresta_get_fonte(aresta);
-  no = remover_cauda(vertice_get_arestas(v));
-  free(no);
-  v = aresta_get_dest(aresta);
-  no = remover_cauda(vertice_get_arestas(v));
-  free(no);
-}
+  arestas_t *aresta = obter_dado(no);
+  free(no); // free node to edge
 
+  // free NODES to edge
+  vertice_t *src = aresta_get_fonte(aresta);
+  no = remover_cauda(vertice_get_arestas(src));
+  free(no);
+  vertice_t *dest = aresta_get_dest(aresta);
+  // wrong: no = remover_cauda(vertice_get_arestas(dest));
+  //free(no);
+
+  // free DATA only once
+  free(aresta);
+}
 

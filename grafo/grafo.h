@@ -46,7 +46,7 @@ int busca_vertice(lista_enc_t *lista, vertice_t *vertice_procurado);
 
 lista_enc_t* componentes_conexos(grafo_t *grafo);
 
-int has_cycle(grafo_t *grafo);
+int has_cycle(grafo_t *grafo, int n_vertices);
 
 arestas_t **grafo_get_arestas_arr(grafo_t *grafo, int *tamanho_arr);
 
@@ -56,6 +56,7 @@ void adiciona_aresta(grafo_t *grafo, vertice_t *vertice, arestas_t *aresta);
 lista_enc_t *grafo_get_arestas(grafo_t *grafo);
 lista_enc_t *grafo_get_vertices(grafo_t *grafo);
 
-void grafo_remove_aresta(grafo_t *grafo, arestas_t *aresta);
+//void grafo_remove_aresta(grafo_t *grafo, arestas_t *aresta);
+void grafo_remove_ultima_aresta(grafo_t *grafo);
 
 #endif /* GRAFO_GRAFO_H_ */

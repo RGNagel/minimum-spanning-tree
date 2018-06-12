@@ -63,38 +63,48 @@ int main(void) {
 
   qsort(arestas_arr, *arestas_tamanho, sizeof(arestas_t*), compara_arestas);
 
-  #ifdef DEBU
+  #ifdef DEBUG
   printf("\nsorted:");
   for (int i = 0; i < *arestas_tamanho; i++)
     printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
   #endif
 
-  libera_grafo(grafo); /* colocar no final mais tarde */
-  free(vertice);
-  free(arestas_tamanho);
-  free(arestas_arr);
-  return 1;
-
   grafo_t *grafo_mst = cria_grafo(1);
 
   for (int i = 0; i < *arestas_tamanho; i++) {
     // we must create new vertices for not cluttering original graph
-    vertice_t *src = cria_vertice(vertice_get_id(aresta_get_fonte(arestas_arr[i])));
-    vertice_t *dest = cria_vertice(vertice_get_id(aresta_get_dest(arestas_arr[i])));
-    adiciona_aresta(grafo_mst, src, arestas_arr[i]);
-    adiciona_aresta(grafo_mst, dest, arestas_arr[i]);
-    // when cycle happens, we don't remove vertices since they were already added in the graph before
-    if (has_cycle(grafo_mst))
-      grafo_remove_aresta(grafo_mst, arestas_arr[i]);
-    // check if edges = v - 1, if so then finish
-    if (lista_tamanho(grafo_get_vertices(grafo_mst)) - 1 == lista_tamanho(grafo_get_arestas(grafo_mst)))
-      break;
-  }
+    vertice_t *src, *dest;
+    int id_src, id_dest;
 
+    id_src = vertice_get_id(aresta_get_fonte(arestas_arr[i]));
+    id_dest = vertice_get_id(aresta_get_dest(arestas_arr[i]));
+
+    /* check if vertices were not added before. TODO: workaround for not taking O(N) */
+    if (!procura_vertice(grafo_mst, id_src))
+      src = grafo_adicionar_vertice(grafo_mst, id_src);
+    if (!procura_vertice(grafo_mst, id_dest))
+      dest = grafo_adicionar_vertice(grafo_mst, id_dest);
+
+    // add ONE edge to both vertices
+    adiciona_adjacentes(grafo_mst, src, 2, vertice_get_id(dest), aresta_get_peso(arestas_arr[i]));
+    // when cycle happens, both two vertices are already in the graph so we do not remove them
+    if (has_cycle(grafo_mst, lista_tamanho(grafo_get_vertices(grafo))     /* second arg. makes it possible to use array indices to find parent inside has_cycle */ ))
+      // remove only edge, not vertices
+      grafo_remove_ultima_aresta(grafo_mst);
+
+    // check if edges = v - 1, if so then finish
+    /*if (lista_tamanho(grafo_get_vertices(grafo_mst)) - 1 == lista_tamanho(grafo_get_arestas(grafo_mst))) {}
+      break;*/
+  }
 
   exportar_grafo_dot("grafo_mst.dot", grafo_mst);
 
-  //libera_grafo(grafo_mst);
+  libera_grafo(grafo);
+  free(vertice);
+  free(arestas_tamanho);
+  free(arestas_arr);
+
+  libera_grafo(grafo_mst);
 
 	return EXIT_SUCCESS;
 }
