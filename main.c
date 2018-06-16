@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include "grafo/grafo.h"
 
+#define DEBUG
+
 int compara_arestas(const void* a1, const void* a2) {
   int p1, p2;
   p1 = aresta_get_peso(*(arestas_t**)a1);
@@ -44,32 +46,36 @@ int main(void) {
   adiciona_adjacentes(grafo, vertice[0], 4, 1, 4, 7, 8);
   adiciona_adjacentes(grafo, vertice[1], 4, 2, 8, 7, 11);
   adiciona_adjacentes(grafo, vertice[2], 6, 3, 7, 5, 4, 8, 2);
-  adiciona_adjacentes(grafo, vertice[3], 2, 4, 9, 5, 14);
+  adiciona_adjacentes(grafo, vertice[3], 4, 4, 9, 5, 14);
   adiciona_adjacentes(grafo, vertice[4], 2, 5, 10);
   adiciona_adjacentes(grafo, vertice[5], 2, 6, 2);
   adiciona_adjacentes(grafo, vertice[6], 4, 7, 1, 8, 6);
   adiciona_adjacentes(grafo, vertice[7], 2, 8, 7);
-  adiciona_adjacentes(grafo, vertice[8], 6, 6, 14, 2, 7, 3, 9);
 
   exportar_grafo_dot("grafo.dot", grafo);
 
   int *arestas_tamanho = (int*)malloc(sizeof(int));
   arestas_t **arestas_arr = grafo_get_arestas_arr(grafo, arestas_tamanho);
 
-  #ifdef DEBUG
+#ifdef DEBUG
+  printf("\npeso: src -> dest");
   for (int i = 0; i < *arestas_tamanho; i++)
-    printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
-  #endif
+    printf("\n%d: %d -> %d", aresta_get_peso((arestas_t*)arestas_arr[i]), vertice_get_id(aresta_get_fonte((arestas_t*)arestas_arr[i])), vertice_get_id(aresta_get_dest((arestas_t*)arestas_arr[i])));
+#endif
 
   qsort(arestas_arr, *arestas_tamanho, sizeof(arestas_t*), compara_arestas);
 
-  #ifdef DEBUG
+#ifdef DEBUG
   printf("\nsorted:");
+  printf("\npeso: src -> dest");
   for (int i = 0; i < *arestas_tamanho; i++)
-    printf("\npeso aresta: %d", aresta_get_peso((arestas_t*)arestas_arr[i]));
-  #endif
+    printf("\n%d: %d -> %d", aresta_get_peso((arestas_t*)arestas_arr[i]), vertice_get_id(aresta_get_fonte((arestas_t*)arestas_arr[i])), vertice_get_id(aresta_get_dest((arestas_t*)arestas_arr[i])));
+#endif
 
   grafo_t *grafo_mst = cria_grafo(1);
+
+  /* get number of vertices. the mst graph will have qty of vertices minus 1 */
+  int qty_v = lista_tamanho(grafo_get_vertices(grafo));
 
   for (int i = 0; i < *arestas_tamanho; i++) {
     // we must create new vertices for not cluttering original graph
@@ -80,21 +86,23 @@ int main(void) {
     id_dest = vertice_get_id(aresta_get_dest(arestas_arr[i]));
 
     /* check if vertices were not added before. TODO: workaround for not taking O(N) */
-    if (!procura_vertice(grafo_mst, id_src))
+    src = procura_vertice(grafo_mst, id_src);
+    if (!src)
       src = grafo_adicionar_vertice(grafo_mst, id_src);
-    if (!procura_vertice(grafo_mst, id_dest))
+
+    dest = procura_vertice(grafo_mst, id_dest);
+    if (!dest)
       dest = grafo_adicionar_vertice(grafo_mst, id_dest);
 
     // add ONE edge to both vertices
     adiciona_adjacentes(grafo_mst, src, 2, vertice_get_id(dest), aresta_get_peso(arestas_arr[i]));
     // when cycle happens, both two vertices are already in the graph so we do not remove them
     if (has_cycle(grafo_mst, lista_tamanho(grafo_get_vertices(grafo))     /* second arg. makes it possible to use array indices to find parent inside has_cycle */ ))
-      // remove only edge, not vertices
-      grafo_remove_ultima_aresta(grafo_mst);
+      grafo_remove_ultima_aresta(grafo_mst);   // remove only edge, not vertices
 
     // check if edges = v - 1, if so then finish
-    /*if (lista_tamanho(grafo_get_vertices(grafo_mst)) - 1 == lista_tamanho(grafo_get_arestas(grafo_mst))) {}
-      break;*/
+    if (qty_v - 1 == lista_tamanho(grafo_get_arestas(grafo_mst)))
+      break;
   }
 
   exportar_grafo_dot("grafo_mst.dot", grafo_mst);

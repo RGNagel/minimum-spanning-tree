@@ -18,8 +18,6 @@
 #define FALSE 0
 #define TRUE 1
 
-#define DEBUG
-
 #define INFINITO INT_MAX
 
 struct grafos {
@@ -131,8 +129,9 @@ void adiciona_adjacentes(grafo_t *grafo, vertice_t *vertice, int n, ...)
 			fprintf(stderr, "adiciona_adjacentes: sucessor nao encontrado no grafo\n");
 			exit(EXIT_FAILURE);
 		}
-    ///////////////////////// 
+    
 		aresta = cria_aresta(vertice, sucessor, peso);
+    /* sucessor does not receive aresta in its struct */
 		adiciona_aresta(grafo, vertice, aresta); /* inclui grafo como arg. p/ preencher a lista de arestas na struct do grafo*/
 
 #ifdef DEBUG
@@ -391,10 +390,7 @@ void grafo_remove_ultima_aresta(grafo_t *grafo)
   vertice_t *src = aresta_get_fonte(aresta);
   no = remover_cauda(vertice_get_arestas(src));
   free(no);
-  vertice_t *dest = aresta_get_dest(aresta);
-  // wrong: no = remover_cauda(vertice_get_arestas(dest));
-  //free(no);
-
+  // do not remove aresta from dest
   // free DATA only once
   free(aresta);
 }
