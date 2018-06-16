@@ -12,7 +12,7 @@ lista_enc/lista_enc.o: lista_enc/lista_enc.h lista_enc/no.h
 lista_enc/no.o: lista_enc/no.h
 
 clean:
-	rm -f *.o grafo/*.o lista_enc/*.o pilha/*.o fila/*.o binaria/*.o *.dot *.svg *.out
+	rm -f *.o grafo/*.o lista_enc/*.o pilha/*.o fila/*.o binaria/*.o *.dot *.svg *.out *.png
 
 hello_world:
 	echo "Hello World"
@@ -20,6 +20,20 @@ hello_world:
 install:
 	sudo apt-get install graphviz imagemagick
 
-show: $(output_file)
-	dot -Tsvg *.dot | display
+output_image = grafos.png
 
+image: $(output_file)
+	# for each .dot file -> convert to .dot.png file
+	# join *.dot.png files into final file
+	# remove *.dot.png files (intermediaries)
+	find . -iname "*.dot" -exec bash -c 'dot -Tpng {} > {}.png' \; && \
+	convert +append *.dot.png $(output_image) && \
+	rm *.dot.png
+
+show: $(output_file)
+	display $(output_image)
+
+
+
+run: $(output_file)
+	./$(output_file)
