@@ -1,0 +1,47 @@
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+TITLE:     Minimum Spanning Tree Algorithm (MST)
+#+AUTHOR:    Rafael G. Nagel
+#+EMAIL:     rafael.gustavo.nagel@gmail.com
+#+DATE:      2018-06-22
+#+LANGUAGE:  en
+#+OPTIONS: H:2
+#+OPTIONS: toc:2
+
+* Introduction
+** Applications and Problem
+   - Usually relates to optimizations in *network design*
+     - telephone
+     - electrical
+     - hydraulic
+     - TV cable
+     - road
+   - Also indirect applications
+     - learning salient features for real-time face verification
+     - max bottleneck paths
+** Conditions
+   - graph G with /positive/ edge weights
+   - /undirected/ edges
+   - find a *min weight* set of /edges/ that connects *all* of the /vertices/
+   - number of /edges/ we want:
+    #+BEGIN_CENTER
+    ~edges = number of vertices - 1~
+    #+END_CENTER
+     
+** Few algorithms that implement MST
+    1. 
+    2.  
+    3. 
+       - 
+       - Why did I choose Kruskal’s?
+       - easier to code and understand
+* Algorithm explanation
+** Step-by-step
+
+** Complexity
+
+* Conclusion
+** Hands-on
+
+* References
+  https://www.geeksforgeeks.org/applications-of-minimum-spanning-tree/
