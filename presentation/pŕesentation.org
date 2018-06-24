@@ -1,0 +1,267 @@
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+TITLE:     Minimum Spanning Tree Algorithm (MST)
+#+AUTHOR:    Rafael G. Nagel
+#+EMAIL:     rafael.gustavo.nagel@gmail.com
+#+DATE:      2018-06-22
+#+LANGUAGE:  pt-br
+#+OPTIONS: H:2
+#+OPTIONS: toc:2
+
+
+* Introduction
+** Applications [fn::https://www.geeksforgeeks.org/applications-of-minimum-spanning-tree/] and Problem
+   - Usually relates to optimizations in *network design*
+     - telephone
+     - electrical
+     - hydraulic
+     - TV cable
+     - road
+   - Also indirect applications
+     - learning salient features for real-time face verification
+     - max bottleneck paths
+** Conditions
+   - graph G with /positive/ edge weights
+   - /undirected/ edges
+   - find a *min weight* set of /edges/ that connects *all* of the /vertices/
+   - number of /edges/ we want:
+    #+BEGIN_CENTER
+    ~edges = number of vertices - 1~
+    #+END_CENTER
+     
+** Few algorithms that implement MST [fn::https://www.ics.uci.edu/~eppstein/161/960206.html]
+    1. Kruskal's algorithm
+    2. Prim's algorithm
+    3. Boruvka's algorithm
+    -----
+    - Why did Kruskal?
+     - easier to code and understand
+* Algorithm explanation (Kruskal)
+** Overview
+   1) order /edges/ by weight (ascendant)
+   2) pick edge and check if it forms a cycle with the spanning tree
+      - if cycle formed then discard edge
+      - else include edge
+   3) repeat 2) until =e = v - 1=
+** How to check if graph has cycle?
+   - Union-find[fn::https://www.geeksforgeeks.org/union-find/] algorithm
+     - temporary vector to save parent of vertices being inserted
+   
+   #+BEGIN_SRC dot :file images/union-find-example.png :cmdline -Tpng
+     graph G {
+     /* set direction of graph to be left-->right */
+     node [style=filled fillcolor="#00ff005f"]
+     rankdir="LR";
+     0 -- 1
+     1 -- 2
+     2 -- 0
+     }       
+   #+END_SRC
+
+   #+BEGIN_CENTER
+   #+ATTR_LATEX: :width 0.5\textwidth
+   #+RESULTS:
+   [[file:images/union-find-example.png]]
+
+ |  0 |  1 |  2 |
+ | -1 | -1 | -1 |
+
+ | *0* | *1* |  2 |
+ |   1 |  -1 | -1 |
+
+ | 0 | *1* | *2* |
+ | 1 |   2 |  -1 |
+
+#+END_CENTER
+
+** Step by step with example[fn::https://www.geeksforgeeks.org/greedy-algorithms-set-2-kruskals-minimum-spanning-tree-mst/]
+   
+   #+BEGIN_SRC dot :file images/example-1.png :cmdline -Tpng
+     graph {
+     ranksep=0.1;
+     rankdir="LR";
+     node [style=filled fillcolor="#00ff005f"]
+     0 -- 1 [label = 4];
+     0 -- 7 [label = 8];
+     1 -- 2 [label = 8];
+     1 -- 7 [label = 11];
+     2 -- 3 [label = 7];
+     2 -- 5 [label = 4];
+     2 -- 8 [label = 2];
+     3 -- 4 [label = 9];
+     3 -- 5 [label = 14];
+     4 -- 5 [label = 10];
+     5 -- 6 [label = 2];
+     6 -- 7 [label = 1];
+     6 -- 8 [label = 6];
+     7 -- 8 [label = 7];
+     }
+   #+END_SRC
+   
+   #+ATTR_LATEX: :width 1\textwidth
+   #+RESULTS:
+   [[file:images/example-1.png]]
+
+** Graph sorted by edges
+
+    | weight | src | dst |
+    |--------+-----+-----|
+    |      1 |   7 |   6 |
+    |      2 |   8 |   2 |
+    |      2 |   6 |   5 |
+    |      4 |   0 |   1 |
+    |      4 |   2 |   5 |
+    |      6 |   8 |   6 |
+    |      7 |   2 |   3 |
+    |      7 |   7 |   8 |
+    |      8 |   0 |   7 |
+    |      8 |   1 |   2 |
+    |      9 |   3 |   4 |
+    |     10 |   5 |   4 |
+    |     11 |   1 |   7 |
+    |     14 |   3 |   5 |
+
+** pick edges from sorted and try to include each one
+
+    
+   #+BEGIN_SRC dot dot :file images/example-1-step-1.png :cmdline -Tpng
+            graph {
+            rankdir="LR";
+node [style=filled fillcolor="#00ff005f"]
+            0 -- 1 [label = 4];
+            2 -- 5 [label = 4];
+            2 -- 8 [label = 2];
+            5 -- 6 [label = 2];
+            6 -- 7 [label = 1];
+            } 
+   #+END_SRC
+   #+ATTR_LATEX: :width 0.7\textwidth
+   #+RESULTS:
+   [[file:images/example-1-step-1.png]]
+
+   ... no cycles so far.
+
+   #+BEGIN_SRC dot dot :file images/example-1-step-3.png :cmdline -Tpng
+                graph {
+                rankdir="LR";
+     node [style=filled fillcolor="#00ff005f"]
+                0 -- 1 [label = 4];
+                2 -- 5 [label = 4];
+                2 -- 8 [label = 2];
+                5 -- 6 [label = 2];
+                6 -- 7 [label = 1];
+                6 -- 8 [label = 6, style=dashed, penwidth=10, color="gray"];
+                }                  
+   #+END_SRC
+
+   #+ATTR_LATEX: :width 0.6\textwidth
+   #+RESULTS:
+   [[file:images/example-1-step-3.png]]
+
+   ... including 8-6 produces a cycle. Do not include it.
+
+** repeat until: =edges = vertices - 1=
+
+      #+BEGIN_SRC dot dot :file images/example-1-step-4.png :cmdline -Tpng
+        graph {
+        rankdir="LR";
+        node [style=filled fillcolor="#00ff005f"]
+        6 -- 7 [label = 1];
+        2 -- 8 [label = 2];
+        2 -- 5 [label = 4];
+        2 -- 3 [label = 7];
+        5 -- 6 [label = 2];
+        0 -- 1 [label = 4];
+        0 -- 7 [label = 8];
+        3 -- 4 [label = 9];
+        }                     
+      #+END_SRC
+
+      #+RESULTS:
+      [[file:images/example-1-step-4.png]]
+
+** Complexity
+
+*** summing up:
+  
+    1. sort graph ascendant (qsort \to O(nlogn))
+    2. apply MST (Kruskal) algorithm
+       1) for /each edge/ in sorted list:
+          1) include it in MST graph
+          2) check if /formed cycle/; if so remove it
+          (find-union algorithm)
+*** Kruskal complexity
+    
+    - The find-union is O(n) in the /present work/
+      - we could improve it to O(logn) using /union by Rank or Height/[fn::https://www.geeksforgeeks.org/union-find/]
+** Complexity
+*** Consider the worst case
+
+    - Everytime we add a new vertice in a graph, we can have:
+
+     #+BEGIN_CENTER
+     =edges + = number of vertices - 1=. 
+     #+END_CENTER
+   
+    - Thus, number of edges in the worst case is:
+
+      #+BEGIN_CENTER
+      edges = $v^{2}$ \\
+      when edges \to $\infty$
+      #+END_CENTER
+
+    
+*** This implementation:
+
+    #+BEGIN_CENTER
+    
+    $$
+    O(e \times \log{e}) + O(e  \times O(v)) \\
+    O(e \times \log{e} + v^{2} \times v) \\
+    O(e \times \log{v} + v^{3}) \\
+    $$
+   
+    #+END_CENTER
+** Complexity
+*** Implementation with: =union-find = O(logn)=
+
+    #+BEGIN_CENTER
+    
+    $$
+    O(e \times \log{e}) + O(e \times \log{v}) \\
+    e = v^{2} \to \log{e} = \log{v^{2}} = 2 \times \log{v} \approx \log{v} \\
+    \therefore \\
+    O(e \times (\log{v} + \log{v})) = O( e \times 2 \times \log{v} ) \\
+    \therefore \\
+    O(e \times \log{v}) \\    
+    $$
+
+    #+END_CENTER
+
+** Code
+   
+*** Structs
+    - grafo
+    - vertice
+    - lista
+    - nó
+
+*** New functions
+   - hasCycle()
+   - union()
+   - find()
+
+** Conclusion
+   
+   - Instead of creating new /structs/ or /modules/, I add /members/ to structs and add new /functions/ to modules.
+*** How to avoid checking *double vertice addition* without *O(n)*?
+    - This issue arise when adding edges to graph to check if /has cycle/
+    - With this issue, the complexity has one more /v/ factor:
+     #+BEGIN_CENTER
+     $O(e \times \log{v} + v^{4})$
+     #+END_CENTER
+
+*** Kruskal algorithm is /much easier/ to implement than other
+
+    - Tradeoffs: Complexity vs. Time of coding
+

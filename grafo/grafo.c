@@ -291,15 +291,8 @@ static void _union(int *parent, int set1, int set2)
 
 int has_cycle(grafo_t *grafo, int n_vertices)
 {
-  //int arestas_tamanho = lista_tamanho(grafo->arestas);
-  int *parent = (int*) malloc(sizeof(int)*n_vertices);
+  int *parent = (int*) malloc(sizeof(int)*n_vertices); /* temp vector */
   memset(parent, -1, sizeof(int)*n_vertices); /* init all elements with -1 (no parent) */
-
-  /*#ifdef DEBUG
-  for (int i = 0; i < arestas_tamanho; i++)
-    printf("\nparent[%d]: %d", i, parent[i]);
-  fflush(stdout);
-  #endif*/
 
   no_t *no_temp = obter_cabeca(grafo->arestas);
   while (no_temp) {
