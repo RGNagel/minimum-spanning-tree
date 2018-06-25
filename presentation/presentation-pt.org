@@ -1,0 +1,287 @@
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+TITLE:     Minimum Spanning Tree Algorithm (MST)
+#+AUTHOR:    Rafael G. Nagel
+#+EMAIL:     rafael.gustavo.nagel@gmail.com
+#+DATE:      2018-06-22
+#+LANGUAGE:  pt-br
+#+OPTIONS: H:2
+#+OPTIONS: toc:2
+
+
+* Introdução
+** Aplicações[fn::https://www.geeksforgeeks.org/applications-of-minimum-spanning-tree/] e problema
+   - Geralmente aplicações associadas a otimização em *redes*
+     - telefone
+     - elétrica
+     - hidráulica
+     - TV a cabo
+     - caminhos
+   - Outras aplicações indiretas
+     - aprendizagem de características para verificação facial em tempo real (?)
+     - caminhos de máximo gargalos
+** Condições para aplicação do algoritmo
+   - grafo com arestas de pesos positivos (> 0)
+   - arestas não-direcionadas
+   - encontrar um conjunto de /arestas/ que somadas tenha um *peso mínimo* e que conecte *todos os vértices*
+   - número de /arestas/ que se deseja:
+    #+BEGIN_CENTER
+    ~arestas = número de vértices - 1~
+    #+END_CENTER
+     
+** Algoritmos que implementam MST[fn::https://www.ics.uci.edu/~eppstein/161/960206.html]
+    1. algoritmo de Kruskal
+    2. algoritmo de Prim
+    3. algoritmo de Boruvka
+    -----
+    - por que Kruskal?
+     - mais fácil de aplicar e compreender
+* Explicação do algoritmo (Kruskal)
+** Visão geral
+   1) ordena-se as arestas por peso /crescemente/
+   2) pega-se uma aresta e verifica-se se ao adicioná-la no grafo final (MST) um *ciclo* será formado
+      - se ciclo formado, então descarta-se a aresta (do MST)
+      - se não forma ciclo, adicione-a ao grafo (MST)
+   3) repita o passo 2. até: =arestas = vértices - 1=
+** Como checar se um grafo formou um ciclo?
+   - algoritmo /Union-find/[fn::https://www.geeksforgeeks.org/union-find/]
+     - baseia-se no uso temporário de um vetor para salvar os /pais/ dos vértices sendo inseridos.
+   
+   #+BEGIN_SRC dot :file images/union-find-example.png :cmdline -Tpng
+     graph G {
+     /* set direction of graph to be left-->right */
+     node [style=filled fillcolor="#00ff005f"]
+     rankdir="LR";
+     0 -- 1
+     1 -- 2
+     2 -- 0
+     }       
+   #+END_SRC
+
+   #+BEGIN_CENTER
+   #+ATTR_LATEX: :width 0.5\textwidth
+   #+RESULTS:
+   [[file:images/union-find-example.png]]
+
+ |  0 |  1 |  2 |
+ | -1 | -1 | -1 |
+
+ | *0* | *1* |  2 |
+ |   1 |  -1 | -1 |
+
+ | 0 | *1* | *2* |
+ | 1 |   2 |  -1 |
+
+#+END_CENTER
+
+** Passo a passo com um exemplo[fn::https://www.geeksforgeeks.org/greedy-algorithms-set-2-kruskals-minimum-spanning-tree-mst/]
+   
+   #+BEGIN_SRC dot :file images/example-1.png :cmdline -Tpng
+     graph {
+     ranksep=0.1;
+     rankdir="LR";
+     node [style=filled fillcolor="#00ff005f"]
+     0 -- 1 [label = 4];
+     0 -- 7 [label = 8];
+     1 -- 2 [label = 8];
+     1 -- 7 [label = 11];
+     2 -- 3 [label = 7];
+     2 -- 5 [label = 4];
+     2 -- 8 [label = 2];
+     3 -- 4 [label = 9];
+     3 -- 5 [label = 14];
+     4 -- 5 [label = 10];
+     5 -- 6 [label = 2];
+     6 -- 7 [label = 1];
+     6 -- 8 [label = 6];
+     7 -- 8 [label = 7];
+     }
+   #+END_SRC
+   
+   #+ATTR_LATEX: :width 1\textwidth
+   #+RESULTS:
+   [[file:images/example-1.png]]
+
+** Grafo ordenado por arestas (crescemente)
+
+    | weight | src | dst |
+    |--------+-----+-----|
+    |      1 |   7 |   6 |
+    |      2 |   8 |   2 |
+    |      2 |   6 |   5 |
+    |      4 |   0 |   1 |
+    |      4 |   2 |   5 |
+    |      6 |   8 |   6 |
+    |      7 |   2 |   3 |
+    |      7 |   7 |   8 |
+    |      8 |   0 |   7 |
+    |      8 |   1 |   2 |
+    |      9 |   3 |   4 |
+    |     10 |   5 |   4 |
+    |     11 |   1 |   7 |
+    |     14 |   3 |   5 |
+
+** pega-se os vértices da lista ordenada e tenta-se inserir cada um
+
+   #+BEGIN_SRC dot dot :file images/example-1-step-1.png :cmdline -Tpng
+            graph {
+            rankdir="LR";
+node [style=filled fillcolor="#00ff005f"]
+            0 -- 1 [label = 4];
+            2 -- 5 [label = 4];
+            2 -- 8 [label = 2];
+            5 -- 6 [label = 2];
+            6 -- 7 [label = 1];
+            } 
+   #+END_SRC
+   #+ATTR_LATEX: :width 0.7\textwidth
+   #+RESULTS:
+   [[file:images/example-1-step-1.png]]
+
+   ... sem ciclos até agora.
+
+   #+BEGIN_SRC dot dot :file images/example-1-step-3.png :cmdline -Tpng
+                graph {
+                rankdir="LR";
+     node [style=filled fillcolor="#00ff005f"]
+                0 -- 1 [label = 4];
+                2 -- 5 [label = 4];
+                2 -- 8 [label = 2];
+                5 -- 6 [label = 2];
+                6 -- 7 [label = 1];
+                6 -- 8 [label = 6, style=dashed, penwidth=10, color="gray"];
+                }                  
+   #+END_SRC
+
+   #+ATTR_LATEX: :width 0.6\textwidth
+   #+RESULTS:
+   [[file:images/example-1-step-3.png]]
+
+   ... ao incluir 8-6 forma-se um ciclo. Portanto não inclua essa aresta.
+
+** repita até: =arestas = vértices - 1=
+
+      #+BEGIN_SRC dot dot :file images/example-1-step-4.png :cmdline -Tpng
+        graph {
+        rankdir="LR";
+        node [style=filled fillcolor="#00ff005f"]
+        6 -- 7 [label = 1];
+        2 -- 8 [label = 2];
+        2 -- 5 [label = 4];
+        2 -- 3 [label = 7];
+        5 -- 6 [label = 2];
+        0 -- 1 [label = 4];
+        0 -- 7 [label = 8];
+        3 -- 4 [label = 9];
+        }                     
+      #+END_SRC
+
+      #+RESULTS:
+      [[file:images/example-1-step-4.png]]
+
+** Complexidade
+
+*** relembrando os passos:
+  
+    1. ordenar grafo crescentemente (qsort \to O(nlogn))
+    2. aplicar algoritmo MST (Kruskal)
+       1) para /cada aresta/ da lista ordenada:
+          1) inclua-a no grafo MST
+          2) checa-se se /ciclo formado/; se sim remove essa aresta
+          (algoritmo find-union)
+
+*** complexidade do algoritmo Kruskal
+    
+    - O /find-union/ é O(n) no /presente trabalho/
+      - poderíamos melhorar isso para O(logn) usando /union by Rank or Height/[fn::https://www.geeksforgeeks.org/union-find/]
+** Complexidade
+*** Considerar o pior caso
+
+    - Toda vez que um vértices é adicionado no grafo, podemos ter:
+
+     #+BEGIN_CENTER
+     =arestas + = número de vértices - 1=
+     #+END_CENTER
+   
+    - Assim, número de arestas no pior caso é:
+
+      #+BEGIN_CENTER
+      /a/ \approx $v^{2}$ \\
+      quando /a/ \to $\infty$
+      #+END_CENTER
+    
+*** Porém, essa implementação:
+
+    #+BEGIN_CENTER
+    
+    $$
+    O(e \times \log{e}) + O(e  \times O(v)) \\
+    O(e \times \log{e} + v^{2} \times v) \\
+    O(e \times \log{v} + v^{3}) \\
+    $$
+   
+    #+END_CENTER
+** Complexidade
+*** Supondo a implementação com: =union-find = O(logn)=
+
+    #+BEGIN_CENTER
+    
+    $$
+    O(e \times \log{e}) + O(e \times \log{v}) \\
+    e = v^{2} \to \log{e} = \log{v^{2}} = 2 \times \log{v} \approx \log{v} \\
+    \therefore \\
+    O(e \times (\log{v} + \log{v})) = O( e \times 2 \times \log{v} ) \\
+    \therefore \\
+    O(e \times \log{v}) \\    
+    $$
+
+    #+END_CENTER
+
+* Código
+
+** Código   
+
+ 
+*** column-left
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :BEAMER_opt: [t]
+    :END:
+**** Estruturas
+     - grafo
+     - vertice
+     - lista
+     - nó
+
+*** column-right
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :BEAMER_opt: [t]
+    :END:
+**** funções (extras)
+    - hasCycle()
+    - union()
+    - find()
+    - =grafo_remove_ultima_aresta()=
+    - =compara_arestas()=
+      - usada no /qsort/ da /lib c/
+    - outras menos importante
+      - e.g. =grafo_get_arestas_arr()=
+
+
+
+* Conclusões
+** Conclusões
+ 
+  - Ao invés de criar novas /estruturas/ ou /módulos/, adicionou-se /membros/ às estruturas e novas /funções/ aos módulos.
+*** Como checar *adição duplicada de vértices* sem ser *O(n)*?
+    - Essa questão aparece quando adiciona-se arestas ao gráfo (MST) para checar se há /ciclos/
+    - Assim, essa complexidade tem mais um fator /v/:
+     #+BEGIN_CENTER
+     $O(e \times \log{v} + v^{4})$
+     #+END_CENTER
+
+*** Por fim: algoritmo Kruskal é /muito mais fácil/ de implementar:
+
+    - Tradeoffs: Complexidade vs. Tempo de código
+
