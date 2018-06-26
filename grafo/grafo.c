@@ -58,11 +58,6 @@ vertice_t* grafo_adicionar_vertice(grafo_t *grafo, int id)
 			exit(EXIT_FAILURE);
 	}
 
-	if (procura_vertice(grafo, id) != NULL) {
-		fprintf(stderr,"grafo_adicionar_vertice: vertice duplicado!\n");
-		exit(EXIT_FAILURE);
-	}
-
 	vertice = cria_vertice(id);
 	no = cria_no(vertice);
 

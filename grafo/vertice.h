@@ -68,7 +68,7 @@ void vertice_set_visitado(vertice_t *vertice, int visitado);
 int vertice_get_visitado(vertice_t *vertice);
 int aresta_tamanho_struct();
 
-
+vertice_t *get_vertice_added_in_mst(vertice_t *vertice);
 
 
 #endif /* GRAFO_VERTICE_H_ */

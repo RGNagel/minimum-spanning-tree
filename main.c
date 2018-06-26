@@ -39,10 +39,9 @@ int main(void) {
 
 	//Adiciona todos os vertices no grafo
   // TODO: verificar se add vertice nao esta repetido
-
-  for (int i = 0; i < 9; i++) {
+  for (int i = 0; i < 9; i++)
     vertice[i] =  grafo_adicionar_vertice(grafo, i);
-  }
+
   adiciona_adjacentes(grafo, vertice[0], 4, 1, 4, 7, 8);
   adiciona_adjacentes(grafo, vertice[1], 4, 2, 8, 7, 11);
   adiciona_adjacentes(grafo, vertice[2], 6, 3, 7, 5, 4, 8, 2);
@@ -90,20 +89,23 @@ int main(void) {
     vertice_t *src, *dest;
     int id_src, id_dest;
 
-    id_src = vertice_get_id(aresta_get_fonte(arestas_arr[i]));
-    id_dest = vertice_get_id(aresta_get_dest(arestas_arr[i]));
+    src = aresta_get_fonte(arestas_arr[i]);
+    id_src = vertice_get_id(src);
+    src = get_vertice_added_in_mst(src);
 
-    /* check if vertices were not added before. TODO: workaround for not taking O(N) */
-    src = procura_vertice(grafo_mst, id_src);
+    dest = aresta_get_dest(arestas_arr[i]);
+    id_dest = vertice_get_id(dest);
+    dest = get_vertice_added_in_mst(dest);
+
+    /* check - in O(1) - if vertices were already added in MST graph */
     if (!src)
       src = grafo_adicionar_vertice(grafo_mst, id_src);
-
-    dest = procura_vertice(grafo_mst, id_dest);
     if (!dest)
       dest = grafo_adicionar_vertice(grafo_mst, id_dest);
 
     // add ONE edge to both vertices
-    adiciona_adjacentes(grafo_mst, src, 2, vertice_get_id(dest), aresta_get_peso(arestas_arr[i]));
+    adiciona_adjacentes(grafo_mst, src, 2, id_dest, aresta_get_peso(arestas_arr[i]));
+
     // when cycle happens, both two vertices are already in the graph so we do not remove them
     if (has_cycle(grafo_mst, lista_tamanho(grafo_get_vertices(grafo))     /* second arg. makes it possible to use array indices to find parent inside has_cycle */ ))
       grafo_remove_ultima_aresta(grafo_mst);   // remove only edge, not vertices

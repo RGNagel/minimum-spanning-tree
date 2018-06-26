@@ -266,6 +266,7 @@ node [style=filled fillcolor="#00ff005f"]
 **** Estruturas
      - grafo
      - vertice
+       - =vertice_t *vertice_added_in_mst=
      - lista
      - nó
 
@@ -281,9 +282,9 @@ node [style=filled fillcolor="#00ff005f"]
     - =grafo_remove_ultima_aresta()=
     - =compara_arestas()=
       - usada no /qsort/ da /lib c/
+    - =get_vertice_added_in_mst=
     - outras menos importante
       - e.g. =grafo_get_arestas_arr()=
-
 
 
 * Conclusões
@@ -291,8 +292,10 @@ node [style=filled fillcolor="#00ff005f"]
  
   - Ao invés de criar novas /estruturas/ ou /módulos/, adicionou-se /membros/ às estruturas e novas /funções/ aos módulos.
 *** Como checar *adição duplicada de vértices* sem ser *O(n)*?
-    - Essa questão aparece quando adiciona-se arestas ao gráfo (MST) para checar se há /ciclos/
-    - Assim, essa complexidade tem mais um fator /v/:
+    - Essa questão aparece quando:
+      - adiciona-se arestas ao gráfo (MST) para checar se há /ciclos/
+      - ao criar novo vértice, verifica-se se há vértice duplicado (removido)
+    - Assim, essa complexidade teria mais um fator /v/, caso não houvesse um /workaround/ para checagem de duplicidade:
      #+BEGIN_CENTER
      $O(e \times \log{v} + v^{4})$
      #+END_CENTER

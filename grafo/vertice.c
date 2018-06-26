@@ -24,6 +24,8 @@ struct vertices {
 
 	vertice_t *antecessor_caminho;
 
+  vertice_t *vertice_added_in_mst;
+
 };
 
 struct arestas {
@@ -50,6 +52,10 @@ vertice_t *cria_vertice(int id)
 	p->arestas = cria_lista_enc();
 	p->id_grupo = -1;
 	p->pai = NULL;
+  /* use for knowing if a vertice was added or not in MST graph;
+     if added: this members holds pointer to the vertice added in MST;
+     this is useful for avoiding 'procura_vertice' in MST graph */
+  p->vertice_added_in_mst = NULL;
 
 	return p;
 }
@@ -275,4 +281,12 @@ int vertice_get_visitado(vertice_t *vertice) {
 int aresta_tamanho_struct()
 {
   return sizeof(arestas_t);
+}
+
+vertice_t *get_vertice_added_in_mst(vertice_t *vertice) {
+  if (vertice == NULL) {
+    fprintf(stderr, "get_vertice_added_in_mst: vertice inválido");
+    exit(EXIT_FAILURE);
+  }
+  return vertice->vertice_added_in_mst;
 }
