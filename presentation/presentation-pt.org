@@ -1,6 +1,6 @@
 #+startup: beamer
 #+LaTeX_CLASS: beamer
-#+TITLE:     Minimum Spanning Tree Algorithm (MST)
+#+TITLE:     Algoritmo Minimum Spanning Tree (MST)
 #+AUTHOR:    Rafael G. Nagel
 #+EMAIL:     rafael.gustavo.nagel@gmail.com
 #+DATE:      2018-06-22
@@ -45,7 +45,7 @@
    3) repita o passo 2. até: =arestas = vértices - 1=
 ** Como checar se um grafo formou um ciclo?
    - algoritmo /Union-find/[fn::https://www.geeksforgeeks.org/union-find/]
-     - baseia-se no uso temporário de um vetor para salvar os /pais/ dos vértices sendo inseridos.
+     - baseia-se no uso temporário de um vetor para salvar os /pais/ dos vértices.
    
    #+BEGIN_SRC dot :file images/union-find-example.png :cmdline -Tpng
      graph G {
@@ -58,21 +58,37 @@
      }       
    #+END_SRC
 
-   #+BEGIN_CENTER
    #+ATTR_LATEX: :width 0.5\textwidth
    #+RESULTS:
    [[file:images/union-find-example.png]]
 
- |  0 |  1 |  2 |
- | -1 | -1 | -1 |
+*** right-column
+    :PROPERTIES:
+    :BEAMER_col: 0.7
+    :BEAMER_opt: [t]
+    :END:
 
- | *0* | *1* |  2 |
- |   1 |  -1 | -1 |
+    - Cada vértice é um sub-conjunto
+    - "find" \to encontrar conjunto do vértice
+    - "union" \to juntar dois sub-conjuntos
 
- | 0 | *1* | *2* |
- | 1 |   2 |  -1 |
+*** left-column
+    :PROPERTIES:
+    :BEAMER_col: 0.3
+    :BEAMER_opt: [t]
+    :END:
+     #+BEGIN_CENTER
 
-#+END_CENTER
+   |  0 |  1 |  2 |
+   | -1 | -1 | -1 |
+
+   | *0* | *1* |  2 |
+   |   1 |  -1 | -1 |
+
+   | 0 | *1* | *2* |
+   | 1 |   2 |  -1 |
+
+     #+END_CENTER
 
 ** Passo a passo com um exemplo[fn::https://www.geeksforgeeks.org/greedy-algorithms-set-2-kruskals-minimum-spanning-tree-mst/]
    
@@ -134,7 +150,7 @@ node [style=filled fillcolor="#00ff005f"]
             6 -- 7 [label = 1];
             } 
    #+END_SRC
-   #+ATTR_LATEX: :width 0.7\textwidth
+   #+ATTR_LATEX: :width 0.5\textwidth
    #+RESULTS:
    [[file:images/example-1-step-1.png]]
 
@@ -153,7 +169,7 @@ node [style=filled fillcolor="#00ff005f"]
                 }                  
    #+END_SRC
 
-   #+ATTR_LATEX: :width 0.6\textwidth
+   #+ATTR_LATEX: :width 0.5\textwidth
    #+RESULTS:
    [[file:images/example-1-step-3.png]]
 

@@ -60,7 +60,11 @@ int main(void) {
 #ifdef DEBUG
   printf("\npeso: src -> dest");
   for (int i = 0; i < *arestas_tamanho; i++)
-    printf("\n%d: %d -> %d", aresta_get_peso((arestas_t*)arestas_arr[i]), vertice_get_id(aresta_get_fonte((arestas_t*)arestas_arr[i])), vertice_get_id(aresta_get_dest((arestas_t*)arestas_arr[i])));
+    printf("\n%d: %d -> %d",
+           aresta_get_peso((arestas_t*)arestas_arr[i]),
+           vertice_get_id(aresta_get_fonte((arestas_t*)arestas_arr[i])),
+           vertice_get_id(aresta_get_dest((arestas_t*)arestas_arr[i]))
+    );
 #endif
 
   qsort(arestas_arr, *arestas_tamanho, sizeof(arestas_t*), compara_arestas);
@@ -69,7 +73,11 @@ int main(void) {
   printf("\nsorted:");
   printf("\npeso: src -> dest");
   for (int i = 0; i < *arestas_tamanho; i++)
-    printf("\n%d: %d -> %d", aresta_get_peso((arestas_t*)arestas_arr[i]), vertice_get_id(aresta_get_fonte((arestas_t*)arestas_arr[i])), vertice_get_id(aresta_get_dest((arestas_t*)arestas_arr[i])));
+    printf("\n%d: %d -> %d",
+           aresta_get_peso((arestas_t*)arestas_arr[i]),
+           vertice_get_id(aresta_get_fonte((arestas_t*)arestas_arr[i])),
+           vertice_get_id(aresta_get_dest((arestas_t*)arestas_arr[i]))
+    );
 #endif
 
   grafo_t *grafo_mst = cria_grafo(1);
