@@ -11,12 +11,15 @@ grafo/vertice.o: grafo/vertice.h lista_enc/lista_enc.h
 lista_enc/lista_enc.o: lista_enc/lista_enc.h lista_enc/no.h
 lista_enc/no.o: lista_enc/no.h
 
+.PHONY: clean
 clean:
 	rm -f *.o grafo/*.o lista_enc/*.o pilha/*.o fila/*.o binaria/*.o *.dot *.svg *.out *.png
 
+.PHONY: hello_world
 hello_world:
 	echo "Hello World"
 
+.PHONY: install
 install:
 	sudo apt-get install graphviz imagemagick
 
@@ -33,7 +36,13 @@ image: $(output_file)
 show: $(output_file)
 	display $(output_image)
 
-
-
 run: $(output_file)
 	./$(output_file)
+
+.PHONY: all_steps
+all_steps:
+	$(MAKE) \
+	$(MAKE) run \
+	$(MAKE) image \
+	$(MAKE) show \
+	$(MAKE) clean
