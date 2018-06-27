@@ -33,9 +33,14 @@ int compara_arestas(const void* a1, const void* a2) {
 int main(void) {
 
 	grafo_t *grafo;
-	vertice_t **vertice = malloc(sizeof(vertice_t*)*9);
 
-	grafo = cria_grafo(0);
+	/* vertice_t **vertice = malloc(sizeof(vertice_t*)*9); */
+  
+  grafo = create_grafo_from_file("grafo_input.csv");
+
+  /*
+
+  grafo = cria_grafo(0);
 
 	//Adiciona todos os vertices no grafo
   // TODO: verificar se add vertice nao esta repetido
@@ -50,6 +55,8 @@ int main(void) {
   adiciona_adjacentes(grafo, vertice[5], 2, 6, 2);
   adiciona_adjacentes(grafo, vertice[6], 4, 7, 1, 8, 6);
   adiciona_adjacentes(grafo, vertice[7], 2, 8, 7);
+
+  */
 
   exportar_grafo_dot("grafo.dot", grafo);
 
@@ -118,7 +125,7 @@ int main(void) {
   exportar_grafo_dot("grafo_mst.dot", grafo_mst);
 
   libera_grafo(grafo);
-  free(vertice);
+  //ofree(vertice);
   free(arestas_tamanho);
   free(arestas_arr);
 

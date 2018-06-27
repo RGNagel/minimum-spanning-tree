@@ -59,4 +59,6 @@ lista_enc_t *grafo_get_vertices(grafo_t *grafo);
 //void grafo_remove_aresta(grafo_t *grafo, arestas_t *aresta);
 void grafo_remove_ultima_aresta(grafo_t *grafo);
 
+grafo_t* create_grafo_from_file(char *filename);
+
 #endif /* GRAFO_GRAFO_H_ */
