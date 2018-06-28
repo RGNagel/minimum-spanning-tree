@@ -396,14 +396,14 @@ grafo_t* create_grafo_from_file(char *filename) {
     exit(EXIT_FAILURE);
   }
   /* read amount of lines; avoiding malloc each time for each line of file */
-  while (fscanf(file, "%d,%d,%d", src, dest, weight)) { /* does not get header line */
+  while (fscanf(file, "%d,%d,%d", &src, &dest, &weight)) { /* does not get header line */
     lines++;
     printf("%d,%d,%d", src, dest, weight);
   }
   vertice_t **vertice = malloc(sizeof(vertice_t*)*lines);
   fseek(file, 0, SEEK_SET);
 
-  while (fscanf(file, "%d,%d,%d", src, dest, weight)) {
+  while (fscanf(file, "%d,%d,%d", &src, &dest, &weight)) {
     vertice[i] = grafo_adicionar_vertice(grafo, src);
     adiciona_adjacentes(grafo, vertice[i], 2, dest, weight);
     i++;
