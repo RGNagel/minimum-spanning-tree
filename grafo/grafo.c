@@ -385,7 +385,6 @@ void grafo_remove_ultima_aresta(grafo_t *grafo)
 
 grafo_t* create_grafo_from_file(char *filename) {
   int lines = 0, i = 0;
-  char buffer[16];
   int src, dest, weight;
 
   grafo_t *grafo = cria_grafo(0);
@@ -395,19 +394,28 @@ grafo_t* create_grafo_from_file(char *filename) {
     fprintf(stderr, "unvalid file opening\n");
     exit(EXIT_FAILURE);
   }
+
   /* read amount of lines; avoiding malloc each time for each line of file */
-  while (fscanf(file, "%d,%d,%d", &src, &dest, &weight)) { /* does not get header line */
+
+  fscanf(file, "%*[^\n]"); /* jump header line */
+  while (fscanf(file, "%d,%d,%d\n", &src, &dest, &weight) != EOF)
     lines++;
-    printf("%d,%d,%d", src, dest, weight);
-  }
+
+  printf("%i", lines);
+  fflush(stdout);
+
   vertice_t **vertice = malloc(sizeof(vertice_t*)*lines);
   fseek(file, 0, SEEK_SET);
 
-  while (fscanf(file, "%d,%d,%d", &src, &dest, &weight)) {
-    vertice[i] = grafo_adicionar_vertice(grafo, src);
-    adiciona_adjacentes(grafo, vertice[i], 2, dest, weight);
-    i++;
-  }
+  for (i = 0; i < lines; i++)
+    vertice[i] = grafo_adicionar_vertice(grafo, i);
+
+  i = 0;
+  fscanf(file, "%*[^\n]"); /* jump header line */
+  while (fscanf(file, "%d,%d,%d\n", &src, &dest, &weight) != EOF)
+    adiciona_adjacentes(grafo, vertice[src], 2, dest, weight);
+
+  fclose(file);
 
   return grafo;
 }
