@@ -1,7 +1,18 @@
 * minimum spanning tree algorithm implementation
   
-  - To understand the algorithm and its implementation, check presentation in ./presentation folder
+  - For more details in the algorithm and its implementation, check presentation in =./presentation=
 
-  - To input a graph
+  - To input a graph, use a file like =grafo_input.csv=, where each line is a
+    edge: source and destiny vertices plus edge weight.
+ 
+  - Use =make= to run program:
+    
+    - =make all_steps=
 
-  - 
+      goes through all steps to output a image containing both graphs (input and
+      output of MST), and clean intermediary files afterwards
+
+    - =make=
+
+      compile the program and then you can execute it manually by =./program.out=
+  
